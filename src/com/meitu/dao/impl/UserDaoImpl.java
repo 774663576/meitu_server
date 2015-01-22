@@ -14,21 +14,26 @@ import com.meitu.db.DBConnection;
 @Repository
 public class UserDaoImpl implements UserDao {
 
-	public void add(User user) {
+	public boolean add(User user) {
 		Connection conn = DBConnection.getConnection(); // 获得连接对象
-		String addSQL = "insert into user(user_name,user_phone,user_gender) values(?,?,?)";
+		String addSQL = "insert into user(user_name,user_phone,user_gender,user_avatar,user_password,user_birthday) values(?,?,?,?,?,?)";
 		PreparedStatement pstmt = null; // 声明预处理对象
 		try {
 			pstmt = conn.prepareStatement(addSQL); // 获得预处理对象并赋值
 			pstmt.setString(1, user.getUser_name());
 			pstmt.setString(2, user.getUser_phone());// 设置第二个参数
 			pstmt.setString(3, user.getUser_gender());
-			pstmt.executeUpdate(); // 执行更新
+			pstmt.setString(4, user.getUser_avatar());
+			pstmt.setString(5, user.getUser_password());
+			pstmt.setString(6, user.getUser_birthday());
+
+			return pstmt.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			DBConnection.close(pstmt); // 关闭预处理对象
 		}
+		return false;
 	}
 
 	public boolean verifyCellphone(String cellPhone) {
