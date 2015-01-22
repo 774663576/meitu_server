@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="MeiTu"
+  id="myeclipse.1421847765598"
+  context-root="/MeiTu"
+  j2ee-spec="5.0"
+  archive="MeiTu.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
