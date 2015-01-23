@@ -26,8 +26,9 @@ public class UserDaoImpl implements UserDao {
 			pstmt.setString(4, user.getUser_avatar());
 			pstmt.setString(5, user.getUser_password());
 			pstmt.setString(6, user.getUser_birthday());
-
-			return pstmt.executeUpdate() > 0;
+			int count = pstmt.executeUpdate();
+			System.out.println(count);
+			return count > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
