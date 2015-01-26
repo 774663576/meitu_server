@@ -87,6 +87,34 @@ public class UserController {
 
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/login.do", method = RequestMethod.POST)
+	public String login(HttpServletRequest request) {
+		String phone = request.getParameter("user_phone");
+		String password = request.getParameter("user_password");
+		Map<String, Object> params = new HashMap<String, Object>();
+		boolean isExist = dao.verifyCellphone(phone);
+		ErrorEnum ret = ErrorEnum.NONE;
+		if (!isExist) {
+			ret = ErrorEnum.NOT_EXIST_USER;
+
+		}
+		Object[] result = dao.login(phone, password);
+		User user = (User) result[1];
+		if (user == null) {
+			ret = ErrorEnum.WRONG_PASSWORD;
+		}
+		if (ret == ErrorEnum.NONE) {
+			params.put("rt", 1);
+			params.put("user", user);
+		} else {
+			params.put("rt", 0);
+			params.put("err", ret);
+		}
+		return JsonUtil.toJsonString(params);
+
+	}
+
 	public UserDao getDao() {
 		return dao;
 	}

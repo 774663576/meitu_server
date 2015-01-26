@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.meitu.bean.User;
 import com.meitu.dao.UserDao;
 import com.meitu.db.DBConnection;
+import com.meitu.enums.ErrorEnum;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -56,6 +57,35 @@ public class UserDaoImpl implements UserDao {
 			DBConnection.close(pstmt); // 关闭预处理对象
 		}
 		return false;
+	}
+
+	public Object[] login(String phone, String password) {
+		System.out.println("login:" + phone + "    " + password);
+		Connection conn = DBConnection.getConnection(); // 获得连接对象
+		String sql = "select * from user where user_phone = ? and user_password = ?";
+		PreparedStatement pstmt = null; // 声明预处理对象
+		ResultSet rs = null;
+		User user = new User();
+		try {
+			pstmt = conn.prepareStatement(sql); // 获得预处理对象并赋值
+			pstmt.setString(1, phone);
+			pstmt.setString(2, password);
+			rs = pstmt.executeQuery(); // 执行查询
+			while (rs.next()) {
+				user.setUser_avatar(rs.getString("user_avatar"));
+				user.setUser_birthday(rs.getString("user_birthday"));
+				user.setUser_gender(rs.getString("user_gender"));
+				user.setUser_id(rs.getInt("user_id"));
+				user.setUser_name(rs.getString("user_name"));
+				return new Object[] { ErrorEnum.NONE, user };
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnection.close(rs); // 关闭结果集对象
+			DBConnection.close(pstmt); // 关闭预处理对象
+		}
+		return new Object[] { ErrorEnum.WRONG_PASSWORD, null };
 	}
 
 }

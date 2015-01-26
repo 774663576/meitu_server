@@ -6,4 +6,6 @@ public interface UserDao {
 	boolean add(User user);
 
 	boolean verifyCellphone(String cellphone);
+
+	Object[] login(String phone, String password);
 }
