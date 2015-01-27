@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.meitu.bean.Article;
 import com.meitu.dao.ArticleDao;
 import com.meitu.db.DBConnection;
+import com.meitu.enums.Status;
 
 @Repository
 public class ArticleDaoImpl implements ArticleDao {
@@ -20,7 +21,7 @@ public class ArticleDaoImpl implements ArticleDao {
 		PreparedStatement pstmt = null;
 		int autoIncKeyFromApi = -1;
 
-		String sql = "insert into article(publisher_id,content,time,last_update_time) values(?,?,?,?)";
+		String sql = "insert into article(publisher_id,content,time,last_update_time,state) values(?,?,?,?,?)";
 
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -28,6 +29,8 @@ public class ArticleDaoImpl implements ArticleDao {
 			pstmt.setString(2, article.getContent());
 			pstmt.setString(3, article.getTime());
 			pstmt.setString(4, article.getTime());
+			pstmt.setString(5, Status.ADD.name());
+
 			pstmt.executeUpdate();
 			rs = pstmt.getGeneratedKeys(); // 获取自增主键！
 			if (rs.next()) {
