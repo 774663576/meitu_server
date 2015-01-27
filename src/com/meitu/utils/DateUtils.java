@@ -17,4 +17,8 @@ public class DateUtils {
 
 	}
 
+	public static String getArticleShowTime() {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		return df.format(new Date());
+	}
 }
