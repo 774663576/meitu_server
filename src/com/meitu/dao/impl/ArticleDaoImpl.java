@@ -50,15 +50,15 @@ public class ArticleDaoImpl implements ArticleDao {
 		PreparedStatement pstmt = null;
 		String sql = "";
 		if (refushState == 1) {
-			sql = "select article.*,`user`.user_avatar,`user`.user_name  from  article  INNER JOIN  `user`  on  growth.publisher_id =`user`.user_id where  (time>? or last_update_time > ?) order by time desc limit 0,20";
+			sql = "select article.*,`user`.user_avatar,`user`.user_name  from  article  INNER JOIN  `user`  on  article.publisher_id =`user`.user_id where  (time>? or last_update_time > ?) order by time desc limit 0,20";
 		} else {
-			sql = "select article.*,`user`.user_avatar,`user`.user_name  from  article  INNER JOIN  `user`  on  growth.publisher_id =`user`.user_id where  (time <? ) order by time desc limit 0,20";
+			sql = "select article.*,`user`.user_avatar,`user`.user_name  from  article  INNER JOIN  `user`  on  article.publisher_id =`user`.user_id where  (time <? ) order by time desc limit 0,20";
 		}
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, refushTime);
 			if (refushState == 1) {
-				pstmt.setString(3, refushTime);
+				pstmt.setString(2, refushTime);
 			}
 			rs = pstmt.executeQuery();
 			return rs;
