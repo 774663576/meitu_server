@@ -108,6 +108,7 @@ public class ArticleController {
 		int user_id = Integer.valueOf(request.getParameter("user_id"));
 		int refushState = Integer.valueOf(request.getParameter("refushState"));
 		String refushTime = request.getParameter("refushTime");
+		System.out.println(refushTime);
 		ResultSet res = dao.getArticles(refushState, refushTime);
 		List<Article> lists = new ArrayList<Article>();
 		Map<String, Object> params = new HashMap<String, Object>();

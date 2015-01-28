@@ -101,20 +101,25 @@ public class UserController {
 			ret = ErrorEnum.NOT_EXIST_USER;
 
 		}
-		Object[] result = dao.login(phone, password);
-		User user = (User) result[1];
-		if (user == null) {
-			ret = ErrorEnum.WRONG_PASSWORD;
+		User user = null;
+		if (isExist) {
+			Object[] result = dao.login(phone, password);
+			user = (User) result[1];
+			if (user == null) {
+				ret = ErrorEnum.WRONG_PASSWORD;
+			}
 		}
 		if (ret == ErrorEnum.NONE) {
 			params.put("rt", 1);
 			params.put("user", user);
 		} else {
 			params.put("rt", 0);
-			params.put("err", ret);
+			params.put("err", ret.name());
 		}
 		JSONObject jsonObject = JSONObject.fromObject(params);
+		System.out.println(ret);
 		System.out.println(jsonObject.toString());
+
 		return jsonObject.toString();
 
 	}
