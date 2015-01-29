@@ -2,7 +2,6 @@ package com.meitu.bean;
 
 public class Comment {
 	private int comment_id;
-	private int article_id;
 	private int publisher_id;
 	private String comment_content = "";
 	private String comment_time = "";
@@ -10,6 +9,15 @@ public class Comment {
 	private String publisher_avatar = "";
 	private String reply_someone_name = "";
 	private int reply_someone_id = 0;
+	private int article_id;
+
+	public int getArticle_id() {
+		return article_id;
+	}
+
+	public void setArticle_id(int article_id) {
+		this.article_id = article_id;
+	}
 
 	public String getReply_someone_name() {
 		return reply_someone_name;
@@ -57,14 +65,6 @@ public class Comment {
 
 	public void setComment_id(int comment_id) {
 		this.comment_id = comment_id;
-	}
-
-	public int getGrowth_id() {
-		return article_id;
-	}
-
-	public void setGrowth_id(int growth_id) {
-		this.article_id = growth_id;
 	}
 
 	public String getComment_content() {
