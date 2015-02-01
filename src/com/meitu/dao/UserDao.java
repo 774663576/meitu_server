@@ -8,4 +8,6 @@ public interface UserDao {
 	boolean verifyCellphone(String cellphone);
 
 	Object[] login(String phone, String password);
+
+	User getUserInfo(int user_id);
 }

@@ -88,4 +88,31 @@ public class UserDaoImpl implements UserDao {
 		return new Object[] { ErrorEnum.WRONG_PASSWORD, null };
 	}
 
+	public User getUserInfo(int user_id) {
+		Connection conn = DBConnection.getConnection(); // 获得连接对象
+		String sql = "select * from user where user_id = ? ";
+		PreparedStatement pstmt = null; // 声明预处理对象
+		ResultSet rs = null;
+		User user = new User();
+		try {
+			pstmt = conn.prepareStatement(sql); // 获得预处理对象并赋值
+			pstmt.setInt(1, user_id);
+			rs = pstmt.executeQuery(); // 执行查询
+			while (rs.next()) {
+				user.setUser_avatar(rs.getString("user_avatar"));
+				user.setUser_birthday(rs.getString("user_birthday"));
+				user.setUser_gender(rs.getString("user_gender"));
+				user.setUser_id(rs.getInt("user_id"));
+				user.setUser_name(rs.getString("user_name"));
+				return user;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnection.close(rs); // 关闭结果集对象
+			DBConnection.close(pstmt); // 关闭预处理对象
+		}
+		return null;
+	}
+
 }

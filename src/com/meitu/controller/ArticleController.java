@@ -25,9 +25,11 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import com.meitu.bean.Article;
 import com.meitu.bean.ArticleImage;
 import com.meitu.bean.Comment;
+import com.meitu.bean.Praise;
 import com.meitu.dao.ArticleDao;
 import com.meitu.dao.ArticleImageDao;
 import com.meitu.dao.CommentDao;
+import com.meitu.dao.PraiseDao;
 import com.meitu.db.DBConnection;
 import com.meitu.enums.ErrorEnum;
 import com.meitu.utils.Constants;
@@ -42,6 +44,8 @@ public class ArticleController {
 	private ArticleImageDao imgDao;
 	@Autowired
 	private CommentDao commentDao;
+	@Autowired
+	private PraiseDao praiseDao;
 
 	@ResponseBody
 	@RequestMapping(value = "/addarticle.do", method = RequestMethod.POST)
@@ -124,8 +128,16 @@ public class ArticleController {
 				article.setContent(res.getString("content"));
 				article.setTime(res.getString("time"));
 				int publisher_id = res.getInt("publisher_id");
+				Praise praise = new Praise();
+				praise.setArticle_id(res.getInt("article_id"));
+				praise.setUser_id(user_id);
+				article.setIsPraise(praiseDao.findPraiseByUserID(praise));
 				article.setPublisher_id(publisher_id);
 				article.setImages(imgDao.getImagesByArticleID(res
+						.getInt("article_id")));
+				article.setComments(commentDao.getCommentByArticleID(res
+						.getInt("article_id")));
+				article.setPraises(praiseDao.findPraiseUserByArticleID(res
 						.getInt("article_id")));
 				article.setPublisher_avatar(res.getString("user_avatar"));
 				article.setPublisher_name(res.getString("user_name"));
@@ -182,6 +194,79 @@ public class ArticleController {
 
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/delcomment.do", method = RequestMethod.POST)
+	public String delComment(HttpServletRequest request) {
+		String comment_id = request.getParameter("comment_id");
+		boolean res = commentDao.deleteCommentByID(Integer.valueOf(comment_id));
+		Map<String, Object> params = new HashMap<String, Object>();
+		if (!res) {
+			params.put("err", ErrorEnum.INVALID.name());
+			params.put("rt", 0);
+		} else {
+			params.put("rt", 1);
+		}
+		return JsonUtil.toJsonString(params);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/articleparise.do", method = RequestMethod.POST)
+	public String aritclePraise(HttpServletRequest request) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		int user_id = Integer.valueOf(request.getParameter("user_id"));
+		int article_id = Integer.valueOf(request.getParameter("article_id"));
+		Praise praise = new Praise();
+		praise.setArticle_id(article_id);
+		praise.setUser_id(user_id);
+		boolean ret = praiseDao.insertPraiseToDB(praise);
+		if (!ret) {
+			params.put("rt", 0);
+			params.put("err", ErrorEnum.INVALID.name());
+			return JsonUtil.toJsonString(params);
+		}
+		int praise_count = dao.getArticlePraiseCount(article_id);
+		ret = dao.updateArticlePraiseCount(article_id, praise_count + 1);
+		if (!ret) {
+			params.put("rt", 0);
+			params.put("err", ErrorEnum.INVALID.name());
+		} else {
+			params.put("rt", 1);
+			params.put("praise_count", praise_count + 1);
+		}
+		System.out.println(JsonUtil.toJsonString(params));
+
+		return JsonUtil.toJsonString(params);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/canclepraise.do", method = RequestMethod.POST)
+	public String calclePraise(HttpServletRequest request) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		int user_id = Integer.valueOf(request.getParameter("user_id"));
+		int article_id = Integer.valueOf(request.getParameter("article_id"));
+		Praise praise = new Praise();
+		praise.setArticle_id(article_id);
+		praise.setUser_id(user_id);
+		boolean ret = praiseDao.cancelPraise(praise);
+		if (!ret) {
+			params.put("rt", 0);
+			params.put("err", ErrorEnum.INVALID.name());
+
+			return JsonUtil.toJsonString(params);
+		}
+		int praise_count = dao.getArticlePraiseCount(article_id);
+		ret = dao.updateArticlePraiseCount(article_id, praise_count - 1);
+		if (!ret) {
+			params.put("rt", 0);
+			params.put("err", ErrorEnum.INVALID.name());
+		} else {
+			params.put("rt", 1);
+			params.put("praise_count", praise_count);
+		}
+		System.out.println(JsonUtil.toJsonString(params));
+		return JsonUtil.toJsonString(params);
+	}
+
 	public ArticleDao getDao() {
 		return dao;
 	}
@@ -204,5 +289,13 @@ public class ArticleController {
 
 	public void setCommentDao(CommentDao commentDao) {
 		this.commentDao = commentDao;
+	}
+
+	public PraiseDao getPraiseDao() {
+		return praiseDao;
+	}
+
+	public void setPraiseDao(PraiseDao praiseDao) {
+		this.praiseDao = praiseDao;
 	}
 }

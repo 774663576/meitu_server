@@ -119,9 +119,35 @@ public class UserController {
 		JSONObject jsonObject = JSONObject.fromObject(params);
 		System.out.println(ret);
 		System.out.println(jsonObject.toString());
-
 		return jsonObject.toString();
 
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/getnewversion.do", method = RequestMethod.POST)
+	public String getNewVersion() {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("rt", 1);
+		params.put("app_version", Constants.APP_VSERSION);
+		params.put("app_link", Constants.APP_LINK);
+		return JsonUtil.toJsonString(params);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/userinfo.do", method = RequestMethod.POST)
+	public String getUserInfo(HttpServletRequest request) {
+		int user_id = Integer.valueOf(request.getParameter("uid"));
+		User user = dao.getUserInfo(user_id);
+		Map<String, Object> params = new HashMap<String, Object>();
+		if (user != null) {
+			params.put("rt", 1);
+			params.put("user", user);
+		} else {
+			params.put("rt", 0);
+			params.put("err", ErrorEnum.INVALID);
+		}
+		JSONObject jsonObject = JSONObject.fromObject(params);
+		return jsonObject.toString();
 	}
 
 	public UserDao getDao() {

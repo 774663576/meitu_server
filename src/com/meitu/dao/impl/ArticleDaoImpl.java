@@ -11,6 +11,7 @@ import com.meitu.bean.Article;
 import com.meitu.dao.ArticleDao;
 import com.meitu.db.DBConnection;
 import com.meitu.enums.Status;
+import com.meitu.utils.DateUtils;
 
 @Repository
 public class ArticleDaoImpl implements ArticleDao {
@@ -69,6 +70,59 @@ public class ArticleDaoImpl implements ArticleDao {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public int getArticlePraiseCount(int article_id) {
+		return 0;
+	}
+
+	public boolean updateArticlePraiseCount(int article_id, int praise_count) {
+		String sql = "UPDATE article SET praise_count = ?  WHERE article_id =?";
+		Connection conn = DBConnection.getConnection(); // 获得连接对象
+		PreparedStatement pstmt = null; // 声明预处理对象
+		try {
+			pstmt = conn.prepareStatement(sql); // 获得预处理对象并赋值
+			pstmt.setInt(1, praise_count);
+			pstmt.setInt(2, article_id);
+			int res = pstmt.executeUpdate(); // 执行查询
+			return res > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnection.close(pstmt); // 关闭预处理对象
+		}
+		return false;
+	}
+
+	public int getArticleCommentCount(int article_id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public boolean updateArticleCommentCount(int article_id, int praise_count) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean updateArticleUpdateTime(int article_id) {
+		String sql = "UPDATE article SET last_update_time = ? ,state=? WHERE article_id =?";
+		Connection conn = DBConnection.getConnection(); // 获得连接对象
+		PreparedStatement pstmt = null; // 声明预处理对象
+		try {
+			pstmt = conn.prepareStatement(sql); // 获得预处理对象并赋值
+			pstmt.setString(1, DateUtils.getArticleShowTime());
+			pstmt.setString(2, Status.UPDATE.name());
+			pstmt.setInt(3, article_id);
+			int res = pstmt.executeUpdate(); // 执行查询
+			if (res > 0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBConnection.close(pstmt); // 关闭预处理对象
+		}
+		return false;
 	}
 
 }
