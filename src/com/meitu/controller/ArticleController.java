@@ -267,6 +267,55 @@ public class ArticleController {
 		return JsonUtil.toJsonString(params);
 	}
 
+	@ResponseBody
+	@RequestMapping(value = "/getarticlesbyid.do", method = RequestMethod.POST)
+	public String getArticleById(HttpServletRequest request) {
+		int user_id = Integer.valueOf(request.getParameter("uid"));
+		String refushTime = request.getParameter("refushTime");
+		System.out.println(refushTime);
+		ResultSet res = dao.getArticlesByUserID(user_id, refushTime);
+		List<Article> lists = new ArrayList<Article>();
+		Map<String, Object> params = new HashMap<String, Object>();
+		try {
+			while (res.next()) {
+				Article article = new Article();
+				article.setArticle_id(res.getInt("article_id"));
+				article.setContent(res.getString("content"));
+				article.setTime(res.getString("time"));
+				int publisher_id = res.getInt("publisher_id");
+				Praise praise = new Praise();
+				praise.setArticle_id(res.getInt("article_id"));
+				praise.setUser_id(user_id);
+				article.setIsPraise(praiseDao.findPraiseByUserID(praise));
+				article.setPublisher_id(publisher_id);
+				article.setImages(imgDao.getImagesByArticleID(res
+						.getInt("article_id")));
+				article.setComments(commentDao.getCommentByArticleID(res
+						.getInt("article_id")));
+				article.setPraises(praiseDao.findPraiseUserByArticleID(res
+						.getInt("article_id")));
+				article.setPublisher_avatar(res.getString("user_avatar"));
+				article.setPublisher_name(res.getString("user_name"));
+				article.setPraise_count(res.getInt("praise_count"));
+				article.setLast_update_time(res.getString("last_update_time"));
+				lists.add(article);
+			}
+			params.put("articles", lists);
+			params.put("lastReqTime", DateUtils.getArticleShowTime());
+			params.put("rt", 1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			params.put("rt", 0);
+			params.put("err", ErrorEnum.INVALID.name());
+		} finally {
+			DBConnection.close(res);
+		}
+		JSONObject jsonObjectFromMap = JSONObject.fromObject(params);
+		System.out.println(jsonObjectFromMap);
+		return jsonObjectFromMap.toString();
+
+	}
+
 	public ArticleDao getDao() {
 		return dao;
 	}

@@ -125,4 +125,26 @@ public class ArticleDaoImpl implements ArticleDao {
 		return false;
 	}
 
+	public ResultSet getArticlesByUserID(int user_id, String refushTime) {
+		Connection conn = DBConnection.getConnection();
+		ResultSet rs = null;
+		PreparedStatement pstmt = null;
+		if ("".equals(refushTime)) {
+			refushTime = DateUtils.getArticleShowTime();
+		}
+		String sql = "";
+		sql = "select article.*,`user`.user_avatar,`user`.user_name  from  article  INNER JOIN  `user`  on  article.publisher_id =`user`.user_id where user_id=? and time <?   order by time desc limit 0,20";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, user_id);
+			pstmt.setString(2, refushTime);
+
+			rs = pstmt.executeQuery();
+			return rs;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

@@ -18,4 +18,7 @@ public interface ArticleDao {
 	boolean updateArticleCommentCount(int article_id, int praise_count);// 更新评论数量
 
 	boolean updateArticleUpdateTime(int article_id);// 赞或者评论后 更新时间
+
+	ResultSet getArticlesByUserID(int user_id, String refushTime);// 获取某一人的文章列表
+
 }
